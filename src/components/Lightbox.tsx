@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import type { Project } from '../types'
+import type { Project } from '../types/project'
 
 const pad = (n: number) => String(n).padStart(2, '0')
 
@@ -39,8 +39,8 @@ export default function Lightbox({ projects, index, onClose, onStep }: LightboxP
         <button className="x" onClick={onClose} aria-label="关闭">
           ✕
         </button>
-        <img src={p.imageUrl} alt={p.title} />
-        <figcaption>{`${pad(index + 1)} — ${p.en}`}</figcaption>
+        <img src={p.thumb || undefined} alt={p.name} />
+        <figcaption>{`${pad(index + 1)} — ${p.name}`}</figcaption>
       </figure>
     </div>
   )

@@ -1,4 +1,4 @@
-import type { Project } from '../types'
+import type { Project } from '../types/project'
 
 const pad = (n: number) => String(n).padStart(2, '0')
 
@@ -23,7 +23,7 @@ export default function WorksSection({ projects, onOpen }: WorksSectionProps) {
                 key={p.id}
                 role="button"
                 tabIndex={0}
-                aria-label={`查看大图：${p.title}`}
+                aria-label={`查看大图：${p.name}`}
                 onClick={() => onOpen(i)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
@@ -34,11 +34,11 @@ export default function WorksSection({ projects, onOpen }: WorksSectionProps) {
               >
                 <p className="no">{pad(i + 1)}</p>
                 <div className="media">
-                  <img src={p.thumbnailUrl || p.imageUrl} alt={p.title} loading="lazy" />
+                  <img src={p.thumb || undefined} alt={p.name} loading="lazy" />
                 </div>
                 <figcaption>
-                  {p.title}
-                  <small>{p.en}</small>
+                  {p.name}
+                  {p.description && <small>{p.description}</small>}
                 </figcaption>
               </figure>
             ))}

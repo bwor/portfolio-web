@@ -1,21 +1,18 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useState } from 'react'
 import SiteNav from './components/SiteNav'
 import HeroSection from './components/HeroSection'
 import WorksSection from './components/WorksSection'
-import ResumeSection from './components/ResumeSection'
 import SkillsSection from './components/SkillsSection'
 import SiteFooter from './components/SiteFooter'
 import Lightbox from './components/Lightbox'
 import useReveal from './hooks/useReveal'
-import { useResumes } from './hooks/useResumes'
-import { PROJECTS, visibleProjects } from './data/portfolio'
+import { useProjects } from './hooks/useProjects'
 
 export default function App() {
-  const projects = useMemo(() => visibleProjects(PROJECTS), [])
+  const { projects } = useProjects()
   const [lightbox, setLightbox] = useState<number | null>(null)
-  const { resumes, loading } = useResumes()
 
-  useReveal([resumes.length, loading])
+  useReveal([projects.length])
 
   const step = useCallback(
     (d: number) =>
@@ -30,7 +27,6 @@ export default function App() {
       <main>
         <HeroSection />
         <WorksSection projects={projects} onOpen={setLightbox} />
-        <ResumeSection resumes={resumes} loading={loading} />
         <SkillsSection />
       </main>
       <SiteFooter />
