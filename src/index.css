@@ -111,6 +111,11 @@ section {
   align-items: end;
 }
 
+/* 简介未加载/接口不可用时的降级块：占满整行，不留在 7fr 那一格 */
+.hero .empty {
+  grid-column: 1 / -1;
+}
+
 .hero h1 {
   font-size: clamp(80px, 11vw, 148px);
   font-weight: 800;

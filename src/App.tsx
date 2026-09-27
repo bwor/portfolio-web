@@ -6,9 +6,11 @@ import SkillsSection from './components/SkillsSection'
 import SiteFooter from './components/SiteFooter'
 import Lightbox from './components/Lightbox'
 import useReveal from './hooks/useReveal'
+import { useProfile } from './hooks/useProfile'
 import { useProjects } from './hooks/useProjects'
 
 export default function App() {
+  const { profile } = useProfile()
   const { projects } = useProjects()
   const [lightbox, setLightbox] = useState<number | null>(null)
 
@@ -23,13 +25,13 @@ export default function App() {
 
   return (
     <>
-      <SiteNav />
+      <SiteNav name={profile?.name ?? null} />
       <main>
-        <HeroSection />
+        <HeroSection profile={profile} />
         <WorksSection projects={projects} onOpen={setLightbox} />
-        <SkillsSection />
+        <SkillsSection profile={profile} />
       </main>
-      <SiteFooter />
+      <SiteFooter name={profile?.name ?? null} />
       {lightbox !== null && projects.length > 0 && (
         <Lightbox projects={projects} index={lightbox} onClose={close} onStep={step} />
       )}
