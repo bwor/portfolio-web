@@ -29,7 +29,7 @@
 
 ## 容器化
 
-本仓库出**纯产物镜像**：`Dockerfile`（多阶段 node:24-alpine 构建 → nginx:stable-alpine 伺服）、`.dockerignore`。**镜像里没有任何 nginx 配置**——用官方默认配置（`root` + `index`）伺服 `dist/`，零自定义。本项目**没有前端路由**（单页 + hash 锚点），所以也不需要 SPA 回退。**本仓库不含任何 `.conf` / `.template` 文件。** **全栈 `compose.yaml` 在工作区根目录**（build context 指向 `../portfolio-web`），命令一律在根目录跑：`docker compose up -d --build`，展示端 http://localhost/。
+本仓库出**纯产物镜像**：`Dockerfile`（多阶段 node:24-alpine 构建 → nginx:stable-alpine 伺服）、`.dockerignore`。**镜像里没有任何 nginx 配置**——用官方默认配置（`root` + `index`）伺服 `dist/`，零自定义。本项目**没有前端路由**（单页 + hash 锚点），所以也不需要 SPA 回退。**本仓库不含任何 `.conf` / `.template` 文件。** **全栈 `compose.yaml` 在 `deploy/` 目录**（build context 指向 `../portfolio-web`），命令一律在 `deploy/` 里跑：`docker compose up -d --build`，展示端 http://localhost/。
 
 部署路由**不在镜像内**：**宿主机 nginx 是全站唯一入口**（`D:\nginx-1.30.5\conf\conf.d\portfolio.conf`，宿主机 nginx 的 conf.d 片段），在 80 上按路径分流——`/` → 本容器、`/admin/` → 管理端、`/api/` → 后端。compose 里那个 `127.0.0.1:8080` 只是给 nginx 用的 **upstream，不是入口**。
 
@@ -37,7 +37,7 @@
 - **产物文件名带内容 hash**（如 `index-BOwO38Vh.js`），nginx 据此给 `/assets/*` 发 `public, max-age=31536000, immutable`；`index.html` 与 `favicon.svg` 不带 hash，不能长缓存。去掉 hash 会破坏这套策略。
 - **前端不知道后端在哪**：Dockerfile 里**没有** `VITE_*` build arg，也没有 `.env`。换后端地址**不用重新构建镜像**。
 - **展示端要被搜索引擎收录**：响应头层面刻意什么都不加（`X-Robots-Tag` 等），要加在宿主机 nginx 统一做。
-- **本镜像不含 `HEALTHCHECK`**：健康检测在根目录 `compose.yaml` 的 `web.healthcheck`。单独 `docker run` 本镜像没有健康状态，属预期。
+- **本镜像不含 `HEALTHCHECK`**：健康检测在 `deploy/compose.yaml` 的 `web.healthcheck`。单独 `docker run` 本镜像没有健康状态，属预期。
 - **`CMD ["nginx", "-g", "daemon off;"]` 的 `-g` 不要删**：nginx 默认 fork 后自退，PID 1 一消失 Docker 就判定容器结束并杀掉 worker。
 
 
