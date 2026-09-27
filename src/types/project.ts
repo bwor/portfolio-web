@@ -11,5 +11,6 @@ export interface Project {
   url: string | null
   thumb: string | null
   status: ProjectStatus
-  created_at: string
+  /** Unix 毫秒时间戳（13 位 number），不是 ISO 字符串：渲染时 `new Date(created_at)` */
+  created_at: number
 }
