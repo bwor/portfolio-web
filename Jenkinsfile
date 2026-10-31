@@ -135,7 +135,7 @@ pipeline {
             services:
               web:
                 image: $IMAGE
-            EOF
+EOF
 
             # 调试
             echo "--- override image ---"
