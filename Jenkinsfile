@@ -123,20 +123,23 @@ pipeline {
             exec 9>".deploy.lock"
             flock 9
 
-            # 先改 .env 里的 WEB_TAG，让后续 pull / up 都从 .env 读同一个 tag。
-            # 不用 WEB_TAG=... 内联覆盖：Docker Compose v2 对带默认值 ${WEB_TAG:-${TAG}}
-            # 的变量，内联 env 不一定能覆盖 .env，导致 pull/up 仍用旧 TAG。
-            if grep -q '^WEB_TAG=' .env; then
-              sed -i "s/^WEB_TAG=.*/WEB_TAG=$NEW_TAG/" .env
-            else
-              printf '\nWEB_TAG=%s\n' "$NEW_TAG" >> .env
-            fi
+            # 可靠地更新 .env 里的 WEB_TAG：先删掉所有 WEB_TAG 行，再追加新的。
+            # 比 sed 替换更不容易受换行符/空白影响。
+            grep -v '^WEB_TAG=' .env > .env.tmp || true
+            printf 'WEB_TAG=%s\n' "$NEW_TAG" >> .env.tmp
+            mv .env.tmp .env
 
-            # 按 .env 里的新 tag 拉取；失败时线上容器不动，只是 .env 改了（下次 up 会用新 tag）
+            # 调试：确认 .env 里的 WEB_TAG 和 compose 解析出的镜像
+            echo "--- .env WEB_TAG ---"
+            grep '^WEB_TAG=' .env
+            echo "--- compose 解析的 web 镜像 ---"
+            docker compose -f compose.prod.yaml config --images | grep portfolio-web || true
+
+            # 按 .env 里的新 tag 拉取
             docker compose -f compose.prod.yaml pull web
 
-            # 重建 web 容器（镜像 tag 变了 compose 会自动 recreate）
-            docker compose -f compose.prod.yaml up -d --no-deps web
+            # 强制重建 web 容器（--force-recreate 不依赖 compose 检测变化）
+            docker compose -f compose.prod.yaml up -d --force-recreate --no-deps web
 
             # 确认跑起来的镜像确实是新 tag，避免"嘴上部署了实际没换"
             RUNNING_IMAGE=$(docker inspect -f '{{.Config.Image}}' portfolio-web 2>/dev/null || true)
