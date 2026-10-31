@@ -123,17 +123,27 @@ pipeline {
             exec 9>".deploy.lock"
             flock 9
 
-            # 先按新 tag 拉取；失败时 .env 还没改，线上保持旧版本
-            WEB_TAG="$NEW_TAG" docker compose -f compose.prod.yaml pull web
-
-            # 持久化本服务的 tag；admin/api 继续用各自的 TAG/ADMIN_TAG/API_TAG
+            # 先改 .env 里的 WEB_TAG，让后续 pull / up 都从 .env 读同一个 tag。
+            # 不用 WEB_TAG=... 内联覆盖：Docker Compose v2 对带默认值 ${WEB_TAG:-${TAG}}
+            # 的变量，内联 env 不一定能覆盖 .env，导致 pull/up 仍用旧 TAG。
             if grep -q '^WEB_TAG=' .env; then
               sed -i "s/^WEB_TAG=.*/WEB_TAG=$NEW_TAG/" .env
             else
               printf '\nWEB_TAG=%s\n' "$NEW_TAG" >> .env
             fi
 
+            # 按 .env 里的新 tag 拉取；失败时线上容器不动，只是 .env 改了（下次 up 会用新 tag）
+            docker compose -f compose.prod.yaml pull web
+
+            # 重建 web 容器（镜像 tag 变了 compose 会自动 recreate）
             docker compose -f compose.prod.yaml up -d --no-deps web
+
+            # 确认跑起来的镜像确实是新 tag，避免"嘴上部署了实际没换"
+            RUNNING_IMAGE=$(docker inspect -f '{{.Config.Image}}' portfolio-web 2>/dev/null || true)
+            case "$RUNNING_IMAGE" in
+              *":$NEW_TAG") ;;
+              *) echo "容器镜像不匹配：期望 *:$NEW_TAG，实际 $RUNNING_IMAGE"; exit 1 ;;
+            esac
 
             STATUS=""
             for i in $(seq 1 60); do
@@ -151,7 +161,7 @@ pipeline {
               exit 1
             fi
             echo "已部署 portfolio-web:$NEW_TAG"
-            REMOTE
+REMOTE
           '''
         }
       }
