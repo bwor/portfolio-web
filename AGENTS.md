@@ -5,6 +5,7 @@
 ## 已锁定决策
 
 - 技术栈：**Vite + React + TypeScript**（不要搭 Next.js / Astro / 纯 HTML 变体）。新源码文件一律 `.ts`/`.tsx`，`src/` 下**不允许**出现 `.js`/`.jsx`。
+- 路由与 Markdown 已定型：**react-router-dom v7**（真路由 `/` 与 `/project/:id`）、**react-markdown v10 + remark-gfm**（详情页正文）。不要换成 Next.js / MDX / marked。
 - 包管理器：**npm**。严禁 `pnpm install` / `yarn` / `bun install`；不要提交外来锁文件（`pnpm-lock.yaml` / `yarn.lock` / `bun.lockb`）。只用 `package-lock.json`。
 - `.npmrc` 有 `engine-strict=true`，Node 版本不符会直接安装失败——先 `nvm use`。
 - Vite 环境变量必须以 `VITE_` 为前缀才进客户端；真实凭据不得入库。
@@ -23,13 +24,13 @@
   - 部署 → 由**宿主机 nginx** 转发 `/api` 到后端。
   因为路径一致，前端**不区分环境**。
 - **改后端地址改宿主机 nginx 的 `upstream portfolio_api`**，不改代码、不加 `.env` 文件（反代是服务端行为，由 nginx 解析，**不需要**浏览器能解析那个地址）。
-- 只调公开只读的 **`/api/web/*`**：`GET /api/web/projects`（后端只返回 `status == "published"`）与 `GET /api/web/profile`（全局单例简介，未创建时 404）。`/api/v1/*` 是管理端专用，**不要从展示端调用**。
+- 只调公开只读的 **`/api/web/*`**：`GET /api/web/projects`（后端只返回 `status == "published"`）、`GET /api/web/projects/{id}`（单个详情，含 Markdown 正文 `content`，未发布/不存在 404）与 `GET /api/web/profile`（全局单例简介，未创建时 404）。`/api/v1/*` 是管理端专用，**不要从展示端调用**。
 - 统一用 `src/api/http.ts` 的 `httpGet<T>`；它不解 envelope，因为后端返回**裸 JSON**（没有 `{ code, message, data }`）。
 - 本端**无鉴权**、不发写操作、不发 `credentials: 'include'`。因为同源，连 `CORS` 都不触发。
 
 ## 容器化
 
-本仓库出**纯产物镜像**：`Dockerfile`（多阶段 node:24-alpine 构建 → nginx:stable-alpine 伺服）、`.dockerignore`。**镜像里没有任何 nginx 配置**——用官方默认配置（`root` + `index`）伺服 `dist/`，零自定义。本项目**没有前端路由**（单页 + hash 锚点），所以也不需要 SPA 回退。**本仓库不含任何 `.conf` / `.template` 文件。** **全栈 `compose.yaml` 在 `deploy/` 目录**（build context 指向 `../portfolio-web`），命令一律在 `deploy/` 里跑：`docker compose up -d --build`，展示端 http://localhost/。
+本仓库出**纯产物镜像**：`Dockerfile`（多阶段 node:24-alpine 构建 → nginx:stable-alpine 伺服）、`.dockerignore`。**镜像里没有任何 nginx 配置**——用官方默认配置（`root` + `index`）伺服 `dist/`，零自定义、**没有 `try_files`**。本项目有真路由（`/`、`/project/:id`），所以**深链刷新的回退在宿主机 nginx 侧**：`location /` 里 `proxy_intercept_errors on; error_page 404 = /index.html;`（等号不能省）。**别把这段搬进本镜像，本仓库也不含任何 `.conf` / `.template` 文件。** **全栈 `compose.yaml` 在 `deploy/` 目录**（build context 指向 `../portfolio-web`），命令一律在 `deploy/` 里跑：`docker compose up -d --build`，展示端 http://localhost/。
 
 部署路由**不在镜像内**：**宿主机 nginx 是全站唯一入口**（`D:\nginx-1.30.5\conf\conf.d\portfolio.conf`，宿主机 nginx 的 conf.d 片段），在 80 上按路径分流——`/` → 本容器、`/admin/` → 管理端、`/api/` → 后端。compose 里那个 `127.0.0.1:8080` 只是给 nginx 用的 **upstream，不是入口**。
 
@@ -53,12 +54,17 @@
 
 ## 目录与组件约定
 
-- 本项目**没有 `src/pages/`**，也没有路由：`App.tsx` 直接组合 `src/components/*` 的单页站点（`SiteNav` / `HeroSection` / `WorksSection` / `SkillsSection` / `SiteFooter` / `Lightbox`）。**不要为了"规范"新建 `pages/` 或引入路由库。**
+- 本项目**有两条真路由**（react-router-dom v7，`BrowserRouter` 包在 `App.tsx`）：`/` → `src/pages/HomePage.tsx`（简介/作品/技能三段），`/project/:id` → `src/pages/ProjectDetailPage.tsx`（项目详情）。**路由表就写在 `App.tsx` 的 `<Routes>` 里**，新页面加到 `src/pages/`，别再往 `App.tsx` 里平铺组件。
+- **Markdown 渲染已定**：`react-markdown` + `remark-gfm`（详情页 `content` 字段）。不要换成 MDX / marked / DOMPurify 手拼，也不要引 Next.js。
+- **`Lightbox` 现在只服务详情页图集**，props 是 `{ items, index, onClose, onStep }`（`LightboxItem` 从组件导出）；首页卡片不再开大图，整卡是 `<Link to={/project/:id}>`。
+- 页面级数据（`profile` / `projects` 列表）在 `App.tsx` 的 `SiteShell` 里取一次、以 props 下发给两个页面；**单个项目详情**由页面自己调 `src/hooks/useProject.ts`。
 - 可复用 UI 放 `src/components/`（平铺单文件即可，不搞文件夹 + `index.tsx`——那是管理端的约定）。
 - 自定义 hook 放 `src/hooks/`，命名 `useXxx.ts` 且具名导出（`useProjects.ts` → `export function useProjects`）。
 - 数据获取用 `useEffect` + 状态管理，放在 `src/hooks/` 里，不要塞进组件。**注意 `useProjects` 用了 `alive` 标志做卸载保护，新增 hook 请沿用**，否则 `setState` 会在卸载后触发。
-- 请求失败时 `useProjects` / `useProfile` 返回 `error: 'unavailable'` 而不是抛出——组件需自行降级渲染，别假设 loading 一定会结束。
-- 组件**不直接发请求**，也**不再有 `src/data/` 假数据**：简介与作品都由 `App.tsx` 调 `useProfile()` / `useProjects()` 后以 props 下发（`SiteNav` / `SiteFooter` 收 `name`，`HeroSection` / `SkillsSection` 收 `profile: Profile | null`）。`profile` 为 `null`（未加载或 404）时 Hero 走 `.empty` 降级块、SkillsSection 整段隐藏。
+- **`useProject` 不在 effect 里同步 setState**（会被 `react/set-state-in-effect` 打中）：它把 `{id, project, error}` 存成一条快照，`loading` 在**渲染期**推导（`entry.id !== id` 即加载中），非法 id 直接在渲染期判 `'notfound'`。新增按参数取数的 hook 照这个写法。
+- 请求失败时 `useProjects` / `useProfile` 返回 `error: 'unavailable'`、`useProject` 返回 `'unavailable' | 'notfound'`（`isNotFound` 按 `HTTP 404` 文案区分后端 404 与网络失败）——组件需自行降级渲染，别假设 loading 一定会结束。
+- 组件**不直接发请求**，也**不再有 `src/data/` 假数据**：简介与作品列表由 `App.tsx` 调 `useProfile()` / `useProjects()` 后以 props 下发（`SiteNav` / `SiteFooter` 收 `name`，`HeroSection` / `SkillsSection` 收 `profile: Profile | null`）。`profile` 为 `null`（未加载或 404）时 Hero 走 `.empty` 降级块、SkillsSection 整段隐藏。
+- **hash 锚点导航**（`/#works`）由 `HomePage` 的 `useEffect` 调 `scrollIntoView` 完成，`App.tsx` 的 `SiteShell` 负责换路由回顶（带 hash 时跳过）。`SiteNav` 的链接写成 `to={{ pathname: '/', hash: '#works' }}`——详情页点导航会先回首页再滚到位。
 - 仍**硬编码在 `index.html` 的**是 `title` / `description` / `og:*` 里的姓名与职位（静态站点无法取接口），要跟简介一致就手动同步。
 
 ## 业务上下文

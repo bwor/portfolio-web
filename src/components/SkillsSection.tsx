@@ -5,23 +5,28 @@ interface SkillsSectionProps {
   profile: Profile | null
 }
 
+const pad = (n: number) => String(n).padStart(2, '0')
+
 export default function SkillsSection({ profile }: SkillsSectionProps) {
   const skills = profile?.skills ?? []
   if (skills.length === 0) return null
+
   return (
-    <section className="sec" id="skills" aria-label="技能">
-      <div className="wrap">
-        <div className="sec-h">
+    <section className="section" id="skills" aria-label="技能">
+      <div className="section-head">
+        <div>
+          <p className="kicker">Toolkit</p>
           <h2>技能</h2>
-          <span className="up">Skills {String(skills.length).padStart(2, '0')}</span>
         </div>
-        <div className="cloud">
-          {skills.map((s) => (
-            <span className="chip" key={s}>
-              {s}
-            </span>
-          ))}
-        </div>
+        <span className="section-meta">Skills {pad(skills.length)}</span>
+      </div>
+      <div className="skills-grid">
+        {skills.map((s, i) => (
+          <div className="skill" key={s}>
+            <span className="skill-no">{pad(i + 1)}</span>
+            <span className="skill-name">{s}</span>
+          </div>
+        ))}
       </div>
     </section>
   )

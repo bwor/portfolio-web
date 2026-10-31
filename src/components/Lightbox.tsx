@@ -1,16 +1,21 @@
 import { useEffect } from 'react'
-import type { Project } from '../types/project'
 
 const pad = (n: number) => String(n).padStart(2, '0')
 
+/** 大图里要展示的一张：src 用后端签名过的公网 URL，caption 显示在图下方 */
+export interface LightboxItem {
+  src: string
+  caption: string
+}
+
 interface LightboxProps {
-  projects: Project[]
+  items: LightboxItem[]
   index: number
   onClose: () => void
   onStep: (d: number) => void
 }
 
-export default function Lightbox({ projects, index, onClose, onStep }: LightboxProps) {
+export default function Lightbox({ items, index, onClose, onStep }: LightboxProps) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose()
@@ -25,9 +30,12 @@ export default function Lightbox({ projects, index, onClose, onStep }: LightboxP
     }
   }, [onClose, onStep])
 
-  const p = projects[index]
+  const item = items[index]
+  // items 被清空或 index 越界（比如关闭前数据变了）时不渲染，避免白屏
+  if (!item) return null
+
   return (
-    <div className="lb" role="dialog" aria-modal="true" aria-label="作品大图">
+    <div className="lb" role="dialog" aria-modal="true" aria-label="图片大图">
       <div className="scrim" onClick={onClose} />
       <button className="ar l" onClick={() => onStep(-1)} aria-label="上一张">
         ←
@@ -39,8 +47,8 @@ export default function Lightbox({ projects, index, onClose, onStep }: LightboxP
         <button className="x" onClick={onClose} aria-label="关闭">
           ✕
         </button>
-        <img src={p.thumb || undefined} alt={p.name} />
-        <figcaption>{`${pad(index + 1)} — ${p.name}`}</figcaption>
+        <img src={item.src} alt={item.caption} />
+        <figcaption>{`${pad(index + 1)} — ${item.caption}`}</figcaption>
       </figure>
     </div>
   )

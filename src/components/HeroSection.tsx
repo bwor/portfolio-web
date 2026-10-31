@@ -5,48 +5,42 @@ interface HeroSectionProps {
   profile: Profile | null
 }
 
-const META: { k: string; v: string }[] = [
-  { k: 'Field', v: 'Front-End' },
-  { k: 'Focus', v: 'Interaction' },
-  { k: 'Index', v: '2026' },
-]
-
 export default function HeroSection({ profile }: HeroSectionProps) {
+  const skills = profile?.skills ?? []
+  const primary = skills.slice(0, 2).join(' / ') || '—'
+  const focus = skills.length > 2 ? skills.slice(2, 4).join(' / ') : '—'
+  const initial = profile?.name?.trim().charAt(0) || '·'
+
   return (
-    <section className="hero" id="intro" aria-label="个人简介">
-      <div className="wrap">
-        {profile ? (
-          <>
-            <div>
-              <h1 className="a1">{profile.name}</h1>
-              <p className="title a1">{profile.title}</p>
-              <p className="summary a1">{profile.summary}</p>
-            </div>
-            <div className="meta up">
-              {META.map((m) => (
-                <div key={m.k}>
-                  <span className="up">{m.k}</span>
-                  <span>{m.v}</span>
-                </div>
-              ))}
-            </div>
-            {profile.skills.length > 0 && (
-              <p className="chips a1">
-                {profile.skills.slice(0, 5).map((s) => (
-                  <span className="chip" key={s}>
-                    {s}
-                  </span>
-                ))}
-              </p>
-            )}
-          </>
-        ) : (
-          <div className="empty">
-            <p className="big">简介正在整理中</p>
-            <p>敬请期待，稍后再来看看。</p>
-          </div>
-        )}
+    <aside className="sidebar" id="intro" aria-label="个人简介">
+      <div className="sidebar-head">
+        <div className="avatar" aria-hidden="true">
+          <span>{initial}</span>
+          <i className="avatar-dot" />
+        </div>
+        <div>
+          <p className="kicker">{profile?.title ?? 'Portfolio'}</p>
+          <h1 className="sidebar-name">{profile?.name ?? 'Portfolio'}</h1>
+        </div>
       </div>
-    </section>
+      <p className="sidebar-bio">{profile?.summary ?? '简介正在整理中，稍后再来看看。'}</p>
+      <dl className="sidebar-meta">
+        <div>
+          <dt>主要技术</dt>
+          <dd>{primary}</dd>
+        </div>
+        <div>
+          <dt>关注方向</dt>
+          <dd>{focus}</dd>
+        </div>
+        <div>
+          <dt>当前状态</dt>
+          <dd className="status">
+            <i />
+            开放交流
+          </dd>
+        </div>
+      </dl>
+    </aside>
   )
 }
