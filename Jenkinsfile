@@ -123,9 +123,10 @@ pipeline {
             exec 9>".deploy.lock"
             flock 9
 
-            # 从 .env 读 REGISTRY / NS，拼出完整镜像名
-            REGISTRY=$(grep '^REGISTRY=' .env | cut -d= -f2-)
-            NS=$(grep '^NS=' .env | cut -d= -f2-)
+            # 从 .env 读 REGISTRY / NS，拼出完整镜像名。
+            # .env 可能是 Windows CRLF 换行，必须去掉 \r 否则 image 值被拆成多行
+            REGISTRY=$(grep '^REGISTRY=' .env | cut -d= -f2- | tr -d '\r')
+            NS=$(grep '^NS=' .env | cut -d= -f2- | tr -d '\r')
             IMAGE="$REGISTRY/$NS/portfolio-web:$NEW_TAG"
 
             # 写一个临时 override 文件，直接指定 image 全名。
