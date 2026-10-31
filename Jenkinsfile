@@ -176,7 +176,7 @@ REMOTE
   post {
     always {
       // post 块可能在 node 上下文释放后执行，sh 需要 workspace，必须包在 node 里
-      node {
+      node('built-in') {
         sh 'docker image prune -f >/dev/null 2>&1 || true'
       }
     }
