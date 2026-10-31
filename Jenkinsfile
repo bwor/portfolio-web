@@ -123,25 +123,30 @@ pipeline {
             exec 9>".deploy.lock"
             flock 9
 
-            # 把 WEB_TAG 写到一个临时 env 文件，用 --env-file 强制覆盖 .env 里的值。
-            # 多个 --env-file 时后者覆盖前者，所以 .env 里的 REGISTRY/NS 等保留，
-            # 只有 WEB_TAG 被覆盖为新值。这样不依赖 .env 修改是否被 compose 正确读取。
-            printf 'WEB_TAG=%s\n' "$NEW_TAG" > .web-tag.env
+            # 从 .env 读 REGISTRY / NS，拼出完整镜像名
+            REGISTRY=$(grep '^REGISTRY=' .env | cut -d= -f2-)
+            NS=$(grep '^NS=' .env | cut -d= -f2-)
+            IMAGE="$REGISTRY/$NS/portfolio-web:$NEW_TAG"
 
-            # 同时也更新 .env 里的 WEB_TAG，方便以后在服务器上手动 docker compose
-            grep -v '^WEB_TAG=' .env > .env.tmp || true
-            cat .web-tag.env >> .env.tmp
-            mv .env.tmp .env
+            # 写一个临时 override 文件，直接指定 image 全名。
+            # 完全绕过 compose.prod.yaml 里 ${WEB_TAG:-${TAG}} 的变量插值，
+            # 不管 .env 里 WEB_TAG 是什么，都强制用新镜像。
+            cat > .override-web.yaml <<EOF
+            services:
+              web:
+                image: $IMAGE
+            EOF
 
-            # 调试：确认 .env 和 compose 解析出的镜像
-            echo "--- .env WEB_TAG ---"
-            grep '^WEB_TAG=' .env || true
-            echo "--- compose 解析的 web 镜像 ---"
-            docker compose -f compose.prod.yaml --env-file .env --env-file .web-tag.env config --images | grep portfolio-web || true
+            # 调试
+            echo "--- override image ---"
+            grep image .override-web.yaml
 
             # 拉取并强制重建
-            docker compose -f compose.prod.yaml --env-file .env --env-file .web-tag.env pull web
-            docker compose -f compose.prod.yaml --env-file .env --env-file .web-tag.env up -d --force-recreate --no-deps web
+            docker compose -f compose.prod.yaml -f .override-web.yaml pull web
+            docker compose -f compose.prod.yaml -f .override-web.yaml up -d --force-recreate --no-deps web
+
+            # 清理临时文件
+            rm -f .override-web.yaml
 
             # 确认跑起来的镜像确实是新 tag
             RUNNING_IMAGE=$(docker inspect -f '{{.Config.Image}}' portfolio-web 2>/dev/null || true)
