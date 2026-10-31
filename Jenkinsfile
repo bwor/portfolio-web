@@ -23,13 +23,13 @@ pipeline {
   }
 
   parameters {
-    string(name: 'REGISTRY', defaultValue: '', description: 'ACR 地址（照抄控制台 docker login 后的域名，不带末尾斜杠）')
-    string(name: 'NS', defaultValue: '', description: 'ACR 命名空间')
+    string(name: 'REGISTRY', defaultValue: 'registry.cn-hangzhou.aliyuncs.com', description: 'ACR 地址（照抄控制台 docker login 后的域名，不带末尾斜杠）')
+    string(name: 'NS', defaultValue: 'xb-portfolio', description: 'ACR 命名空间')
     string(name: 'DOCKER_PLATFORM', defaultValue: 'linux/amd64', description: '服务器架构：x86_64→linux/amd64，aarch64→linux/arm64')
     booleanParam(name: 'DEPLOY', defaultValue: true, description: '构建推送后是否部署到服务器')
     booleanParam(name: 'DEPLOY_ONLY', defaultValue: false, description: '只部署 TAG_OVERRIDE，不构建（回滚用）')
     string(name: 'TAG_OVERRIDE', defaultValue: '', description: 'DEPLOY_ONLY=true 时必填，服务器上已存在的镜像 tag')
-    string(name: 'SERVER_HOST', defaultValue: '', description: 'ECS 公网 IP / 域名（DEPLOY=true 时必填）')
+    string(name: 'SERVER_HOST', defaultValue: '120.26.243.31', description: 'ECS 公网 IP / 域名（DEPLOY=true 时必填）')
     string(name: 'DEPLOY_DIR', defaultValue: '/opt/portfolio', description: '服务器部署目录（含 compose.prod.yaml 与 .env）')
   }
 
