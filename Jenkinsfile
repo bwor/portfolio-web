@@ -123,25 +123,27 @@ pipeline {
             exec 9>".deploy.lock"
             flock 9
 
-            # 可靠地更新 .env 里的 WEB_TAG：先删掉所有 WEB_TAG 行，再追加新的。
-            # 比 sed 替换更不容易受换行符/空白影响。
+            # 把 WEB_TAG 写到一个临时 env 文件，用 --env-file 强制覆盖 .env 里的值。
+            # 多个 --env-file 时后者覆盖前者，所以 .env 里的 REGISTRY/NS 等保留，
+            # 只有 WEB_TAG 被覆盖为新值。这样不依赖 .env 修改是否被 compose 正确读取。
+            printf 'WEB_TAG=%s\n' "$NEW_TAG" > .web-tag.env
+
+            # 同时也更新 .env 里的 WEB_TAG，方便以后在服务器上手动 docker compose
             grep -v '^WEB_TAG=' .env > .env.tmp || true
-            printf 'WEB_TAG=%s\n' "$NEW_TAG" >> .env.tmp
+            cat .web-tag.env >> .env.tmp
             mv .env.tmp .env
 
-            # 调试：确认 .env 里的 WEB_TAG 和 compose 解析出的镜像
+            # 调试：确认 .env 和 compose 解析出的镜像
             echo "--- .env WEB_TAG ---"
-            grep '^WEB_TAG=' .env
+            grep '^WEB_TAG=' .env || true
             echo "--- compose 解析的 web 镜像 ---"
-            docker compose -f compose.prod.yaml config --images | grep portfolio-web || true
+            docker compose -f compose.prod.yaml --env-file .env --env-file .web-tag.env config --images | grep portfolio-web || true
 
-            # 按 .env 里的新 tag 拉取
-            docker compose -f compose.prod.yaml pull web
+            # 拉取并强制重建
+            docker compose -f compose.prod.yaml --env-file .env --env-file .web-tag.env pull web
+            docker compose -f compose.prod.yaml --env-file .env --env-file .web-tag.env up -d --force-recreate --no-deps web
 
-            # 强制重建 web 容器（--force-recreate 不依赖 compose 检测变化）
-            docker compose -f compose.prod.yaml up -d --force-recreate --no-deps web
-
-            # 确认跑起来的镜像确实是新 tag，避免"嘴上部署了实际没换"
+            # 确认跑起来的镜像确实是新 tag
             RUNNING_IMAGE=$(docker inspect -f '{{.Config.Image}}' portfolio-web 2>/dev/null || true)
             case "$RUNNING_IMAGE" in
               *":$NEW_TAG") ;;
