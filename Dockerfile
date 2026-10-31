@@ -1,6 +1,12 @@
+# syntax=docker/dockerfile:1
 # 展示端生产镜像：Node 构建 dist/ -> nginx 纯静态伺服
-# 单独构建：docker build -t portfolio-web:local .（上下文取本目录）
-# 全栈：工作区根目录 compose.yaml，docker compose up -d --build
+# 单独构建：docker buildx build --platform linux/amd64 --provenance=false -t portfolio-web:local .
+# 全栈：deploy/ 目录下的 compose.yaml，docker compose up -d --build
+#
+# Jenkins 也直接使用本文件构建，不在流水线里单独跑 npm build：
+#   docker buildx build --platform linux/amd64 --provenance=false \
+#     --build-arg GIT_SHA=<sha> --build-arg BUILD_NUMBER=<n> \
+#     -t <registry>/<ns>/portfolio-web:<tag> --push .
 
 # ---------------------------------------------------------------------------
 # Stage 1/3  依赖安装
@@ -13,7 +19,8 @@ WORKDIR /app
 COPY package.json package-lock.json .npmrc ./
 
 # build 跑 tsc -b，typescript/@types 在 devDependencies，不能 --omit=dev
-RUN npm ci
+# cache mount 需要 BuildKit（顶部 # syntax 已声明），重复构建不必重新下载依赖
+RUN --mount=type=cache,target=/root/.npm npm ci
 
 
 # ---------------------------------------------------------------------------
@@ -30,6 +37,8 @@ COPY public ./public
 COPY src ./src
 
 # 不设 VITE_* build arg：接口地址是相对路径 /api/web/*，转发由宿主机 nginx 负责
+# lint 放在镜像构建里：CI 与本地 docker build 都过同一道门禁
+RUN npm run lint
 RUN npm run build
 
 
@@ -38,6 +47,13 @@ RUN npm run build
 # ---------------------------------------------------------------------------
 # 路由、反代、缓存头都在镜像外（宿主机 nginx），本镜像只提供产物
 FROM nginx:stable-alpine
+
+# 版本信息由 CI 传入，方便在服务器上核对镜像来源（.dockerignore 排除了 .git，容器里取不到）
+ARG GIT_SHA=unknown
+ARG BUILD_NUMBER=0
+LABEL org.opencontainers.image.title="portfolio-web" \
+      org.opencontainers.image.revision="${GIT_SHA}" \
+      org.opencontainers.image.version="${BUILD_NUMBER}"
 
 COPY --from=build /app/dist /usr/share/nginx/html
 
