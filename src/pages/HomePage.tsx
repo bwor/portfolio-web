@@ -2,19 +2,21 @@ import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import HeroSection from '../components/HeroSection'
 import AboutSection from '../components/AboutSection'
+import WritingSection from '../components/WritingSection'
 import WorksSection from '../components/WorksSection'
-import SkillsSection from '../components/SkillsSection'
 import ContactSection from '../components/ContactSection'
 import type { Profile } from '../types/profile'
 import type { Project } from '../types/project'
+import type { Article } from '../types/article'
 
 interface HomePageProps {
   profile: Profile | null
   projects: Project[]
+  articles: Article[]
 }
 
-/** 首页：侧栏简介 / 最近 / 作品 / 技能 / 联系，并负责把 `/#works` 这类 hash 滚到对应区块。 */
-export default function HomePage({ profile, projects }: HomePageProps) {
+/** 首页：侧栏简介 / 最近 / 文章 / 项目 / 联系，并负责把 `/#work` 这类 hash 滚到对应区块。 */
+export default function HomePage({ profile, projects, articles }: HomePageProps) {
   const location = useLocation()
 
   useEffect(() => {
@@ -28,8 +30,8 @@ export default function HomePage({ profile, projects }: HomePageProps) {
       <HeroSection profile={profile} />
       <div className="content">
         <AboutSection profile={profile} projects={projects} />
+        <WritingSection articles={articles} />
         <WorksSection projects={projects} />
-        <SkillsSection profile={profile} />
         <ContactSection profile={profile} />
       </div>
     </div>

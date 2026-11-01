@@ -106,6 +106,25 @@ section {
   letter-spacing: 0.08em;
 }
 
+.section-link {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.section-link:hover {
+  color: var(--accent);
+}
+
+.section-link svg {
+  width: 14px;
+  height: 14px;
+}
+
 /* ---------- header ---------- */
 .site-header {
   position: sticky;
@@ -288,6 +307,31 @@ section {
   background: var(--sage);
 }
 
+.sidebar-social {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px 12px;
+  margin-top: 24px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.social-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.2s;
+}
+
+.social-link:hover {
+  color: var(--accent);
+}
+
+.social-link svg {
+  width: 14px;
+  height: 14px;
+}
+
 /* ---------- sections ---------- */
 .section {
   padding: 56px 0;
@@ -344,6 +388,86 @@ section {
 
 .now-meta a:hover {
   color: var(--accent);
+}
+
+/* ---------- writing ---------- */
+.writing-list {
+  border-top: 1px solid var(--line);
+}
+
+.writing-item {
+  display: grid;
+  grid-template-columns: 70px minmax(0, 1fr) 70px;
+  gap: 24px;
+  align-items: start;
+  padding: 28px 0;
+  border-bottom: 1px solid var(--line);
+  transition: color 0.2s;
+}
+
+.writing-meta {
+  font-size: 11px;
+}
+
+.writing-date {
+  display: block;
+  color: var(--muted-2);
+}
+
+.writing-cat {
+  display: block;
+  margin-top: 8px;
+  color: var(--accent);
+}
+
+.writing-title {
+  margin-bottom: 8px;
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.25;
+  transition: color 0.2s;
+}
+
+.writing-item:hover .writing-title {
+  color: var(--accent);
+}
+
+.writing-excerpt {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.writing-extra {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  font-size: 10px;
+  color: var(--muted-2);
+}
+
+.writing-arrow {
+  color: var(--ink);
+  transition: transform 0.2s;
+}
+
+.writing-item:hover .writing-arrow {
+  transform: translateX(4px);
+}
+
+.writing-arrow svg {
+  width: 14px;
+  height: 14px;
+}
+
+.writing-empty {
+  padding: 28px 0;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 13px;
 }
 
 /* ---------- works ---------- */
@@ -996,6 +1120,12 @@ section {
   height: auto;
 }
 
+/* 文章详情：复用 detail-h 的字号/元信息样式，只收成单栏（没有缩略图那一列） */
+.article-h {
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 820px;
+}
+
 .gallery-head {
   margin-top: 64px;
 }
@@ -1245,6 +1375,24 @@ section {
 @media (max-width: 720px) {
   .works-grid {
     grid-template-columns: 1fr;
+  }
+
+  .writing-item {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .writing-meta {
+    display: flex;
+    gap: 12px;
+  }
+
+  .writing-cat {
+    margin-top: 0;
+  }
+
+  .writing-extra {
+    justify-content: flex-start;
   }
 
   .project-tile:first-child {

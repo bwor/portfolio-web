@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom'
 import { Arrow } from './Arrow'
 import type { Profile } from '../types/profile'
 
@@ -7,6 +6,8 @@ interface ContactSectionProps {
 }
 
 export default function ContactSection({ profile }: ContactSectionProps) {
+  const email = profile?.email ?? null
+
   return (
     <section className="cta reveal" id="contact" aria-label="联系">
       <p className="cta-kicker">Let&apos;s build something</p>
@@ -16,12 +17,16 @@ export default function ContactSection({ profile }: ContactSectionProps) {
           <br />
           我很乐意听听。
         </h2>
-        <Link to={{ pathname: '/', hash: '#works' }}>
-          先看看作品
-          <Arrow diagonal />
-        </Link>
+        {email ? (
+          <a href={`mailto:${email}`}>
+            {email} <Arrow diagonal />
+          </a>
+        ) : (
+          <a href="mailto:hello@linshu.me">
+            hello@linshu.me <Arrow diagonal />
+          </a>
+        )}
       </div>
-      {profile?.name && <p className="cta-sign">— {profile.name}</p>}
     </section>
   )
 }

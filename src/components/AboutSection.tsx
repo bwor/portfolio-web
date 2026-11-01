@@ -9,9 +9,13 @@ interface AboutSectionProps {
 
 const pad = (n: number) => String(n).padStart(2, '0')
 
+/**
+ * 「近况」区块（Figma: Now）。
+ * 引语正文 / 研究方向 / 最近更新标题来自 Profile（管理端维护）；未填写时不渲染假文案。
+ * 区块右上角的「更新」月份取自有数据（最新项目）的创建时间。
+ */
 export default function AboutSection({ profile, projects }: AboutSectionProps) {
   const latest = projects[0] ?? null
-  const skills = profile?.skills ?? []
   const updated = latest ? new Date(latest.created_at) : null
 
   return (
@@ -26,11 +30,7 @@ export default function AboutSection({ profile, projects }: AboutSectionProps) {
         </span>
       </div>
       <div className="now-quote">
-        <p>
-          {latest
-            ? latest.description?.trim() || latest.name
-            : '作品正在整理中，新的项目即将上线。'}
-        </p>
+        {profile?.now_text && <p>{profile.now_text}</p>}
         <div className="now-meta">
           <div>
             <span>项目</span>
@@ -41,15 +41,23 @@ export default function AboutSection({ profile, projects }: AboutSectionProps) {
             )}
           </div>
           <div>
-            <span>作品</span>
-            <Link to={{ pathname: '/', hash: '#works' }}>{projects.length} 项</Link>
+            <span>研究</span>
+            {profile?.research_focus ? (
+              <strong>{profile.research_focus}</strong>
+            ) : (
+              <strong>—</strong>
+            )}
           </div>
-          {skills.length > 0 && (
-            <div>
-              <span>技能</span>
-              <Link to={{ pathname: '/', hash: '#skills' }}>{skills.length} 项</Link>
-            </div>
-          )}
+          <div>
+            <span>更新</span>
+            {profile?.latest_update_title ? (
+              <Link to={{ pathname: '/', hash: '#writing' }}>
+                {profile.latest_update_title}
+              </Link>
+            ) : (
+              <strong>—</strong>
+            )}
+          </div>
         </div>
       </div>
     </section>

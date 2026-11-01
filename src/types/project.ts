@@ -8,6 +8,8 @@ export type ProjectStatus = 'published' | 'unpublished'
 export interface Project {
   id: number
   name: string
+  /** 类型标签，如 SaaS 产品；未填写为 null（卡片回退显示「项目」） */
+  type: string | null
   description: string | null
   url: string | null
   /** 对象存储直传后的公网 URL（后端读取时已重新签名） */

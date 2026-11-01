@@ -1,3 +1,4 @@
+import { Arrow } from './Arrow'
 import type { Profile } from '../types/profile'
 
 interface HeroSectionProps {
@@ -41,6 +42,18 @@ export default function HeroSection({ profile }: HeroSectionProps) {
           </dd>
         </div>
       </dl>
+      <div className="sidebar-social">
+        {profile?.github_url && (
+          <a href={profile.github_url} target="_blank" rel="noopener noreferrer" className="social-link">
+            GitHub <Arrow diagonal />
+          </a>
+        )}
+        {profile?.email && (
+          <a href={`mailto:${profile.email}`} className="social-link">
+            Email <Arrow diagonal />
+          </a>
+        )}
+      </div>
     </aside>
   )
 }

@@ -51,7 +51,7 @@ export default function ProjectDetailPage({ projects }: ProjectDetailPageProps) 
 
   const back = (
     <p className="up back">
-      <Link to={{ pathname: '/', hash: '#works' }}>← 作品</Link>
+      <Link to={{ pathname: '/', hash: '#work' }}>← 作品</Link>
     </p>
   )
 

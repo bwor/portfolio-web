@@ -76,11 +76,11 @@ function ProjectVisual({ kind }: { kind: VisualKind }) {
 
 export default function WorksSection({ projects }: { projects: Project[] }) {
   return (
-    <section className="section" id="works" aria-label="作品集">
+    <section className="section" id="work" aria-label="作品集">
       <div className="section-head">
         <div>
           <p className="kicker">Selected Work</p>
-          <h2>近期作品</h2>
+          <h2>近期项目</h2>
         </div>
         <span className="section-meta">Works {pad(projects.length)}</span>
       </div>
@@ -103,7 +103,9 @@ export default function WorksSection({ projects }: { projects: Project[] }) {
               <div className="project-info">
                 <div className="project-top">
                   <div>
-                    <p className="project-no">{pad(i + 1)} · 项目</p>
+                    <p className="project-no">
+                      {pad(i + 1)} · {p.type ?? '项目'}
+                    </p>
                     <h3 className="project-title">{p.name}</h3>
                   </div>
                   <span className="project-arrow">

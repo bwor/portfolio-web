@@ -4,10 +4,11 @@ import { Arrow } from './Arrow'
 interface SiteNavProps {
   /** 未加载或后端不可用时为 null，退化为中性站名 */
   name: string | null
-  hasSkills?: boolean
+  email?: string | null
 }
 
-export default function SiteNav({ name, hasSkills = true }: SiteNavProps) {
+export default function SiteNav({ name, email }: SiteNavProps) {
+  const mailto = email ? `mailto:${email}` : 'mailto:hello@linshu.me'
   return (
     <header className="site-header">
       <div className="site-header-inner">
@@ -16,13 +17,13 @@ export default function SiteNav({ name, hasSkills = true }: SiteNavProps) {
           <span className="brand-dot">.</span>
         </Link>
         <nav className="nav-links" aria-label="页面锚点">
-          <Link to={{ pathname: '/', hash: '#intro' }}>简介</Link>
-          <Link to={{ pathname: '/', hash: '#works' }}>作品</Link>
-          {hasSkills && <Link to={{ pathname: '/', hash: '#skills' }}>技能</Link>}
-          <Link className="nav-cta" to={{ pathname: '/', hash: '#contact' }}>
-            聊聊
+          <Link to={{ pathname: '/', hash: '#now' }}>近况</Link>
+          <Link to={{ pathname: '/', hash: '#writing' }}>文章</Link>
+          <Link to={{ pathname: '/', hash: '#work' }}>项目</Link>
+          <a className="nav-cta" href={mailto}>
+            联系我
             <Arrow diagonal />
-          </Link>
+          </a>
         </nav>
       </div>
     </header>
