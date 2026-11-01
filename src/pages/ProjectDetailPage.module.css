@@ -380,40 +380,16 @@
   margin-top: 0;
 }
 
-.pdBg {
-  display: grid;
-  grid-template-columns: 1.4fr 0.6fr;
-  gap: 32px;
-}
-
-.pdBg > div:first-child p {
+.pdBg p {
+  max-width: 760px;
   margin-bottom: 16px;
   color: var(--muted);
   font-size: 15px;
   line-height: 1.9;
 }
 
-.pdBgCard {
-  height: fit-content;
-  padding: 20px;
-  background: var(--paper-2);
-}
-
-.pdBgCard span {
-  display: block;
-  margin-bottom: 12px;
-  color: var(--muted-2);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.pdBgCard strong {
-  font-family: var(--serif);
-  font-size: 20px;
-  font-weight: 500;
-  line-height: 1.6;
+.pdBg p:last-child {
+  margin-bottom: 0;
 }
 
 .pdFeatures {
@@ -821,7 +797,6 @@
     font-size: 24px;
   }
 
-  .pdBg,
   .pdFeatures,
   .pdArch,
   .pdRetro,

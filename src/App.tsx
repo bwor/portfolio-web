@@ -46,10 +46,7 @@ function SiteShell() {
             path="/"
             element={<HomePage profile={profile} projects={projects} articles={articles} />}
           />
-          <Route
-            path="/project/:id"
-            element={<ProjectDetailPage projects={projects} articles={articles} />}
-          />
+          <Route path="/project/:id" element={<ProjectDetailPage />} />
           <Route
             path="/article/:id"
             element={<ArticleDetailPage profile={profile} articles={articles} />}

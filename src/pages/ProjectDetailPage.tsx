@@ -13,74 +13,25 @@ import { useProject } from '../hooks/useProject'
 import detailStyles from './detail.module.css'
 import markdownStyles from './detail-markdown.module.css'
 import styles from './ProjectDetailPage.module.css'
-import type { Article } from '../types/article'
-import type { Project } from '../types/project'
+import type { TimelineKind } from '../types/project'
 
 const pad = (n: number) => String(n).padStart(2, '0')
 
 const formatDate = (ms: number) =>
   new Date(ms).toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' })
 
-const SECTIONS = [
-  ['背景', '#pd-background'],
-  ['核心功能', '#pd-features'],
-  ['迭代历程', '#pd-timeline'],
-  ['技术架构', '#pd-architecture'],
-  ['问题与成果', '#pd-results'],
-  ['复盘规划', '#pd-roadmap'],
-] as const
+/** 迭代徽章图例：配色键与后端枚举一一对应 */
+const LEGEND: Record<TimelineKind, string> = {
+  新功能: '#e8dfd5',
+  重构: '#dde3eb',
+  性能优化: '#dce8df',
+}
 
-const FEATURES = [
-  ['01', 'Markdown 写作', '支持代码高亮、数学公式与图表，让注意力回到内容本身。'],
-  ['02', '一键部署', '克隆仓库并完成配置后，10 分钟即可上线。'],
-  ['03', '全文搜索', '毫秒级本地索引搜索，不依赖额外服务。'],
-  ['04', '评论系统', '内置社区评论，保留互动且无需额外运维。'],
-  ['05', 'SEO 优化', '自动生成 sitemap、RSS 与结构化数据，默认提供良好的索引基础。'],
-  ['06', '深色模式', '跟随系统主题自动切换，并在 hydration 前消除页面闪烁。'],
-] as const
-
-const TIMELINE = [
-  ['v0.1', '2024.03', '搭建基础框架，完成文章列表与详情页', '新功能'],
-  ['v0.3', '2024.05', '接入 Markdown 渲染与代码高亮', '新功能'],
-  ['v0.6', '2024.07', '上线全文搜索，重构数据层', '重构'],
-  ['v1.0', '2024.09', '正式上线，支持评论与 RSS', '新功能'],
-  ['v1.2', '2025.01', '性能优化，Lighthouse 评分达到 95+', '性能优化'],
-] as const
-
-const ARCHITECTURE = [
-  ['App Router', '使用服务端渲染与流式输出，兼顾内容 SEO 和首屏性能。'],
-  ['PostgreSQL + ORM', '关系型数据配合类型安全 ORM，让迁移与数据管理更清晰。'],
-  ['Tailwind CSS', '使用原子化样式与设计 token，保持界面的一致性。'],
-  ['Edge 部署', '与托管平台深度集成，让预览环境和生产部署开箱即用。'],
-] as const
-
-const PROBLEMS = [
-  ['搜索索引体积过大', '改为构建时增量生成索引，体积减少 60%'],
-  ['深色模式切换闪烁', '在 hydration 前通过内联脚本注入主题，消除 FOUC'],
-  ['评论系统运维成本高', '改用托管式讨论区，实现零服务器成本'],
-] as const
-
-const STATS = [
-  ['1,200+', '累计访问用户'],
-  ['95+', 'Lighthouse 评分'],
-  ['6 个月', '稳定运行时长'],
-  ['120+', 'GitHub Star'],
-] as const
-
-const ROADMAP = ['图片优化', '多语言支持', '移动端编辑'] as const
-
-const badgeClass = (kind: string) =>
+const badgeClass = (kind: TimelineKind) =>
   cx(
     styles.pdBadge,
     kind === '性能优化' ? styles.perf : kind === '重构' ? styles.refactor : styles.new,
   )
-
-interface ProjectDetailPageProps {
-  /** 全站已发布项目列表，用来算上一个/下一个作品 */
-  projects: Project[]
-  /** 全站已发布文章，用于「相关文章」 */
-  articles: Article[]
-}
 
 function ProjectMock({ name }: { name: string }) {
   return (
@@ -136,7 +87,7 @@ function ProjectMock({ name }: { name: string }) {
  * 数据来自 GET /api/web/projects/{id}；正文字段是 Markdown，用 react-markdown + remark-gfm 渲染。
  * 本页不用滚动显形（异步加载，观察时机不可控），内容直接出现。
  */
-export default function ProjectDetailPage({ projects, articles }: ProjectDetailPageProps) {
+export default function ProjectDetailPage() {
   const { id } = useParams()
   const { project, loading, error } = useProject(Number(id))
   const [lightbox, setLightbox] = useState<number | null>(null)
@@ -191,12 +142,31 @@ export default function ProjectDetailPage({ projects, articles }: ProjectDetailP
     )
   }
 
-  // 上一个/下一个：只在列表里能定位到本项目时才给导航
-  const index = projects.findIndex((p) => p.id === project.id)
-  const prev = index > 0 ? projects[index - 1] : null
-  const next = index >= 0 && index < projects.length - 1 ? projects[index + 1] : null
+  // 详情区块：后台未录入 → 空数组/None → 整章隐藏（不造兜底假数据）
+  const { background, features, timeline, architecture, problems, stats, gains, improvements, roadmap } =
+    project
+  const showBackground = Boolean(project.description || background)
+  const showFeatures = features.length > 0
+  const showTimeline = timeline.length > 0
+  const showArchitecture = architecture.length > 0
+  const showResults = problems.length > 0 || stats.length > 0
+  const showRetro = Boolean(gains || improvements) || roadmap.length > 0
+
+  // 章节导航只列实际渲染的章节，避免出现指向空章节的链接
+  const toc: [string, string][] = []
+  if (showBackground) toc.push(['背景', '#pd-background'])
+  if (showFeatures) toc.push(['核心功能', '#pd-features'])
+  if (showTimeline) toc.push(['迭代历程', '#pd-timeline'])
+  if (showArchitecture) toc.push(['技术架构', '#pd-architecture'])
+  if (showResults) toc.push(['问题与成果', '#pd-results'])
+  if (showRetro) toc.push(['复盘规划', '#pd-roadmap'])
+
+  // 图例只列出现过的类型，避免「图例有、列表没有」
+  const legendKinds = Array.from(new Set(timeline.map((item) => item.kind)))
+
+  // 相邻项目与相关文章由详情接口返回（列表默认 limit=20，不能靠全站列表算）
+  const { prev, next, related_articles: relatedArticles } = project
   const previewImage = project.thumb ?? project.images[0] ?? null
-  const relatedArticles = articles.slice(0, 2)
 
   return (
     <section className={detailStyles.detail}>
@@ -252,7 +222,7 @@ export default function ProjectDetailPage({ projects, articles }: ProjectDetailP
         <div className={styles.pdBody}>
           <aside className={styles.pdToc} aria-label="项目章节">
             <nav>
-              {SECTIONS.map(([label, href]) => (
+              {toc.map(([label, href]) => (
                 <a href={href} key={href}>
                   {label}
                 </a>
@@ -261,140 +231,141 @@ export default function ProjectDetailPage({ projects, articles }: ProjectDetailP
           </aside>
 
           <article className={styles.pdArticle}>
-            <section className={styles.pdSection} id="pd-background">
-              <Kicker>01 · Background</Kicker>
-              <h2>为什么做这个项目</h2>
-              <div className={styles.pdBg}>
-                <div>
+            {showBackground && (
+              <section className={styles.pdSection} id="pd-background">
+                <Kicker>01 · Background</Kicker>
+                <h2>为什么做这个项目</h2>
+                <div className={styles.pdBg}>
                   {project.description && <p>{project.description}</p>}
-                  <p>
-                    这个项目从一个具体的问题出发：把重复的流程收敛成可靠、可维护的产品，并把使用门槛降到最低。
-                  </p>
-                  <p>
-                    从设计、开发到部署与迭代，完整走通一遍产品流程，是它最重要的实践价值。
-                  </p>
+                  {background && <p>{background}</p>}
                 </div>
-                <div className={styles.pdBgCard}>
-                  <span>目标用户</span>
-                  <strong>
-                    独立开发者
-                    <br />
-                    技术写作者
-                  </strong>
-                </div>
-              </div>
-            </section>
+              </section>
+            )}
 
-            <section className={styles.pdSection} id="pd-features">
-              <Kicker>02 · Features</Kicker>
-              <h2>核心功能</h2>
-              <div className={styles.pdFeatures}>
-                {FEATURES.map(([number, title, description]) => (
-                  <div className={styles.pdFeature} key={number}>
-                    <span className={styles.pdFeatureNo}>{number}</span>
-                    <h3>{title}</h3>
-                    <p>{description}</p>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            <section className={styles.pdSection} id="pd-timeline">
-              <Kicker>03 · Timeline</Kicker>
-              <h2>从想法到 v1.2</h2>
-              <div className={styles.pdTimeline}>
-                {TIMELINE.map(([version, date, description, kind], i) => (
-                  <div className={styles.pdTimelineRow} key={version}>
-                    <strong className={styles.pdVersion}>{version}</strong>
-                    <span className={styles.pdDate}>{date}</span>
-                    <p>{description}</p>
-                    <span className={badgeClass(kind)}>
-                      {kind}
-                      {i === TIMELINE.length - 1 ? ' · 当前' : ''}
-                    </span>
-                  </div>
-                ))}
-              </div>
-              <div className={styles.pdLegend}>
-                <span>
-                  <i style={{ background: '#e8dfd5' }} />
-                  新功能
-                </span>
-                <span>
-                  <i style={{ background: '#dde3eb' }} />
-                  重构
-                </span>
-                <span>
-                  <i style={{ background: '#dce8df' }} />
-                  性能优化
-                </span>
-              </div>
-            </section>
-
-            <section className={styles.pdSection} id="pd-architecture">
-              <Kicker>04 · Architecture</Kicker>
-              <h2>技术架构与选型</h2>
-              <div className={styles.pdArch}>
-                {ARCHITECTURE.map(([title, description], i) => (
-                  <div className={styles.pdArchItem} key={title}>
-                    <span className={styles.pdArchNo}>0{i + 1}</span>
-                    <h3>{title}</h3>
-                    <p>{description}</p>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            <section className={styles.pdSection} id="pd-results">
-              <Kicker>05 · Problems &amp; Results</Kicker>
-              <h2>踩过的坑与解决方案</h2>
-              <div className={styles.pdProblems}>
-                {PROBLEMS.map(([problem, solution]) => (
-                  <div className={styles.pdProblem} key={problem}>
-                    <strong>{problem}</strong>
-                    <span>
-                      <Arrow />
-                    </span>
-                    <p>{solution}</p>
-                  </div>
-                ))}
-              </div>
-              <div className={styles.pdStats}>
-                {STATS.map(([value, label]) => (
-                  <div className={styles.pdStat} key={label}>
-                    <strong>{value}</strong>
-                    <span>{label}</span>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            <section className={styles.pdSection} id="pd-roadmap">
-              <Kicker>06 · Retrospective</Kicker>
-              <h2>复盘与后续规划</h2>
-              <div className={styles.pdRetro}>
-                <div>
-                  <span>收获</span>
-                  <p>
-                    完整走通设计、开发、部署与迭代全流程，对数据获取与渲染模式有了更深入的实战理解。
-                  </p>
-                </div>
-                <div>
-                  <span>待优化</span>
-                  <p>图片懒加载策略、多语言支持，以及移动端编辑器的输入体验。</p>
-                </div>
-              </div>
-              <div className={styles.pdRoadmap}>
-                <span>Roadmap</span>
-                <ul>
-                  {ROADMAP.map((item, i) => (
-                    <li key={item}>
-                      0{i + 1} · {item}
-                    </li>
+            {showFeatures && (
+              <section className={styles.pdSection} id="pd-features">
+                <Kicker>02 · Features</Kicker>
+                <h2>核心功能</h2>
+                <div className={styles.pdFeatures}>
+                  {features.map(({ title, description }, i) => (
+                    <div className={styles.pdFeature} key={`${title}-${i}`}>
+                      <span className={styles.pdFeatureNo}>{pad(i + 1)}</span>
+                      <h3>{title}</h3>
+                      <p>{description}</p>
+                    </div>
                   ))}
-                </ul>
-              </div>
-            </section>
+                </div>
+              </section>
+            )}
+
+            {showTimeline && (
+              <section className={styles.pdSection} id="pd-timeline">
+                <Kicker>03 · Timeline</Kicker>
+                <h2>迭代历程</h2>
+                <div className={styles.pdTimeline}>
+                  {timeline.map(({ version, date, description, kind }, i) => (
+                    <div className={styles.pdTimelineRow} key={`${version}-${i}`}>
+                      <strong className={styles.pdVersion}>{version}</strong>
+                      <span className={styles.pdDate}>{date}</span>
+                      <p>{description}</p>
+                      <span className={badgeClass(kind)}>
+                        {kind}
+                        {i === timeline.length - 1 ? ' · 当前' : ''}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                <div className={styles.pdLegend}>
+                  {legendKinds.map((kind) => (
+                    <span key={kind}>
+                      <i style={{ background: LEGEND[kind] }} />
+                      {kind}
+                    </span>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {showArchitecture && (
+              <section className={styles.pdSection} id="pd-architecture">
+                <Kicker>04 · Architecture</Kicker>
+                <h2>技术架构与选型</h2>
+                <div className={styles.pdArch}>
+                  {architecture.map(({ title, description }, i) => (
+                    <div className={styles.pdArchItem} key={`${title}-${i}`}>
+                      <span className={styles.pdArchNo}>{pad(i + 1)}</span>
+                      <h3>{title}</h3>
+                      <p>{description}</p>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {showResults && (
+              <section className={styles.pdSection} id="pd-results">
+                <Kicker>05 · Problems &amp; Results</Kicker>
+                <h2>踩过的坑与解决方案</h2>
+                {problems.length > 0 && (
+                  <div className={styles.pdProblems}>
+                    {problems.map(({ problem, solution }, i) => (
+                      <div className={styles.pdProblem} key={`${problem}-${i}`}>
+                        <strong>{problem}</strong>
+                        <span>
+                          <Arrow />
+                        </span>
+                        <p>{solution}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {stats.length > 0 && (
+                  <div className={styles.pdStats}>
+                    {stats.map(({ value, label }, i) => (
+                      <div className={styles.pdStat} key={`${label}-${i}`}>
+                        <strong>{value}</strong>
+                        <span>{label}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </section>
+            )}
+
+            {showRetro && (
+              <section className={styles.pdSection} id="pd-roadmap">
+                <Kicker>06 · Retrospective</Kicker>
+                <h2>复盘与后续规划</h2>
+                {(gains || improvements) && (
+                  <div className={styles.pdRetro}>
+                    {gains && (
+                      <div>
+                        <span>收获</span>
+                        <p>{gains}</p>
+                      </div>
+                    )}
+                    {improvements && (
+                      <div>
+                        <span>待优化</span>
+                        <p>{improvements}</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+                {roadmap.length > 0 && (
+                  <div className={styles.pdRoadmap}>
+                    <span>Roadmap</span>
+                    <ul>
+                      {roadmap.map((item, i) => (
+                        <li key={`${item}-${i}`}>
+                          {pad(i + 1)} · {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </section>
+            )}
 
             {gallery.length > 0 && (
               <section className={styles.pdSection} id="pd-gallery">

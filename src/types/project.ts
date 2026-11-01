@@ -4,7 +4,49 @@
  */
 export type ProjectStatus = 'published' | 'unpublished'
 
-/** ProjectResponse：列表项，不含 content */
+/** 迭代类型：后端用枚举校验，前端徽章配色依赖这三个值 */
+export type TimelineKind = '新功能' | '重构' | '性能优化'
+
+export interface ProjectFeature {
+  title: string
+  description: string
+}
+
+export interface ProjectTimelineItem {
+  version: string
+  date: string
+  description: string
+  kind: TimelineKind
+}
+
+export interface ProjectArchItem {
+  title: string
+  description: string
+}
+
+export interface ProjectProblemItem {
+  problem: string
+  solution: string
+}
+
+export interface ProjectStatItem {
+  value: string
+  label: string
+}
+
+/** 详情响应的相邻项目引用 */
+export interface ProjectRef {
+  id: number
+  name: string
+}
+
+/** 详情响应的关联文章引用 */
+export interface RelatedArticleRef {
+  id: number
+  title: string
+}
+
+/** ProjectResponse：列表项，不含 content 与详情区块 */
 export interface Project {
   id: number
   name: string
@@ -23,7 +65,22 @@ export interface Project {
   created_at: number
 }
 
-/** ProjectDetailResponse：列表字段 + Markdown 正文 */
+/**
+ * ProjectDetailResponse：列表字段 + Markdown 正文 + 9 个平铺详情区块。
+ * 详情区块都是可变长数组，空数组表示后台未录入（页面隐藏对应章节）。
+ */
 export interface ProjectDetail extends Project {
   content: string | null
+  background: string | null
+  features: ProjectFeature[]
+  timeline: ProjectTimelineItem[]
+  architecture: ProjectArchItem[]
+  problems: ProjectProblemItem[]
+  stats: ProjectStatItem[]
+  gains: string | null
+  improvements: string | null
+  roadmap: string[]
+  prev: ProjectRef | null
+  next: ProjectRef | null
+  related_articles: RelatedArticleRef[]
 }
