@@ -1,0 +1,635 @@
+.page {
+  padding: 0 0 24px;
+}
+
+.progress {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 60;
+  height: 2px;
+  background: var(--line-soft);
+}
+
+.progressBar {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  transition: width 0.1s linear;
+}
+
+.hero {
+  padding: 8px 0 56px;
+  border-bottom: 1px solid var(--line);
+  text-align: center;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 28px;
+}
+
+.tag {
+  padding: 4px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.title {
+  max-width: 900px;
+  margin: 0 auto 32px;
+  font-family: var(--serif);
+  font-size: clamp(40px, 6vw, 88px);
+  font-weight: 600;
+  letter-spacing: -0.055em;
+  line-height: 1.08;
+}
+
+.excerpt {
+  max-width: 650px;
+  margin: 0 auto 32px;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 20px;
+  color: var(--muted-2);
+  font-size: 11px;
+}
+
+.author {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.share {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  transition: border-color 0.2s;
+}
+
+.share:hover {
+  border-color: var(--muted);
+}
+
+.share svg {
+  width: 13px;
+  height: 13px;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 720px) 220px;
+  gap: 64px;
+  align-items: start;
+  justify-content: space-between;
+  padding: 56px 0 80px;
+}
+
+.layoutSolo {
+  grid-template-columns: minmax(0, 720px);
+  justify-content: start;
+}
+
+.articleColumn {
+  min-width: 0;
+}
+
+.prose {
+  max-width: none;
+  margin-top: 0;
+  font-size: 16px;
+  line-height: 1.9;
+  counter-reset: article-section;
+}
+
+.prose > p:first-child {
+  padding-bottom: 40px;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 19px;
+  line-height: 1.9;
+}
+
+.prose p {
+  margin: 0 0 22px;
+  color: var(--muted);
+  font-size: 15.5px;
+  line-height: 2;
+}
+
+.prose h2 {
+  margin: 64px 0 24px;
+  padding-top: 0;
+  border-top: 0;
+  font-size: clamp(28px, 4vw, 40px);
+  letter-spacing: -0.035em;
+  line-height: 1.25;
+  scroll-margin-top: 96px;
+  counter-increment: article-section;
+}
+
+.prose h2::before {
+  content: counter(article-section, decimal-leading-zero) ' /';
+  display: block;
+  margin-bottom: 12px;
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+}
+
+.prose h3 {
+  margin: 36px 0 14px;
+  font-size: 21px;
+  scroll-margin-top: 96px;
+}
+
+.prose blockquote {
+  margin: 32px 0;
+  padding: 6px 0 6px 24px;
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 18px;
+  line-height: 1.9;
+}
+
+.prose code {
+  padding: 2px 6px;
+  border: 1px solid var(--line-soft);
+  border-radius: 3px;
+  background: var(--paper-2);
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 0.82em;
+}
+
+.prose pre code {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font-size: inherit;
+}
+
+.prose ul {
+  margin: 20px 0;
+  padding-left: 22px;
+}
+
+.prose ul li {
+  margin: 8px 0;
+  color: var(--muted);
+  line-height: 1.9;
+}
+
+.prose ol {
+  margin: 32px 0;
+  padding-left: 0;
+  border-top: 1px solid var(--line);
+  list-style: none;
+  counter-reset: article-list;
+}
+
+.prose ol > li {
+  display: grid;
+  grid-template-columns: 2rem 1fr;
+  gap: 16px;
+  margin: 0;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.7;
+  counter-increment: article-list;
+}
+
+.prose ol > li::before {
+  content: counter(article-list, decimal-leading-zero);
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 11px;
+}
+
+.prose img {
+  border: 1px solid var(--line);
+}
+
+.prose table {
+  font-size: 14px;
+}
+
+.emptyText {
+  color: var(--muted);
+  font-size: 15px;
+}
+
+.aside {
+  min-width: 0;
+}
+
+.toc {
+  position: sticky;
+  top: 112px;
+}
+
+.tocTitle {
+  margin-bottom: 20px;
+  color: var(--muted-2);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.tocNav {
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--line);
+}
+
+.tocLink {
+  margin-left: -1px;
+  padding: 8px 0 8px 16px;
+  border-left: 1px solid transparent;
+  color: var(--muted-2);
+  font-size: 11px;
+  line-height: 1.6;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.tocLink:hover {
+  color: var(--ink);
+}
+
+.tocActive {
+  border-left-color: var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.tocSub {
+  padding-left: 28px;
+  font-size: 10.5px;
+}
+
+.tocShare {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 32px;
+  font-size: 11px;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.tocShare:hover {
+  color: var(--accent);
+}
+
+.tocShare svg {
+  width: 13px;
+  height: 13px;
+}
+
+.shareBlock {
+  margin-top: 64px;
+  padding: 32px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  text-align: center;
+}
+
+.shareBlock p {
+  margin-bottom: 16px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.shareButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.shareButton:hover {
+  background: var(--accent);
+}
+
+.shareButton svg {
+  width: 13px;
+  height: 13px;
+}
+
+.authorCard {
+  display: flex;
+  gap: 24px;
+  margin-top: 48px;
+  padding: 32px;
+  background: var(--paper-2);
+}
+
+.avatar {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--sage-soft);
+  color: var(--sage-ink);
+  font-family: var(--serif);
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.authorBody {
+  min-width: 0;
+}
+
+.authorKicker {
+  margin-bottom: 6px;
+  color: var(--muted-2);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.authorName {
+  margin-bottom: 8px;
+  font-family: var(--serif);
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.authorBio {
+  margin-bottom: 12px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.authorLinks {
+  display: flex;
+  gap: 16px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.authorLinks a:hover {
+  color: var(--accent);
+}
+
+.license {
+  margin-top: 20px;
+  color: var(--muted-2);
+  font-size: 10px;
+  line-height: 2;
+}
+
+.next {
+  margin-top: 64px;
+}
+
+.nextHead {
+  margin-bottom: 20px;
+}
+
+.nextGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.nextCard {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 20px;
+  border: 1px solid var(--line);
+  transition: border-color 0.2s;
+}
+
+.nextCard:hover {
+  border-color: var(--muted);
+}
+
+.nextCard small {
+  color: var(--muted-2);
+  font-size: 10px;
+}
+
+.nextCard strong {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+.nextCard svg {
+  flex-shrink: 0;
+  transition: transform 0.2s;
+}
+
+.nextCard:hover svg {
+  transform: translateX(4px);
+}
+
+.nextPrev svg {
+  transform: rotate(180deg);
+}
+
+.nextPrev:hover svg {
+  transform: rotate(180deg) translateX(4px);
+}
+
+.discussion {
+  margin-top: 64px;
+  padding-top: 48px;
+  border-top: 1px solid var(--line);
+}
+
+.discussionHead {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 32px;
+}
+
+.discussionTitle {
+  margin-bottom: 0;
+  font-family: var(--serif);
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1.25;
+}
+
+.discussionSource {
+  color: var(--muted-2);
+  font-size: 10px;
+}
+
+.discussionCard {
+  padding: 40px 20px;
+  border: 1px solid var(--line);
+  background: var(--paper-2);
+  text-align: center;
+}
+
+.discussionCardTitle {
+  margin-bottom: 8px;
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.discussionCardDesc {
+  max-width: 420px;
+  margin: 0 auto 24px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.discussionButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 12px;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.discussionButton:hover {
+  background: var(--accent);
+}
+
+.discussionButton svg {
+  width: 13px;
+  height: 13px;
+}
+
+.toTop {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--paper);
+  box-shadow: 0 8px 20px rgb(0 0 0 / 18%);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(12px);
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.toTopVisible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: none;
+}
+
+.toTop svg {
+  transform: rotate(-90deg);
+}
+
+@media (max-width: 1024px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    justify-content: start;
+  }
+
+  .aside {
+    display: none;
+  }
+
+  .prose {
+    max-width: none;
+  }
+}
+
+@media (max-width: 720px) {
+  .nextGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .hero {
+    padding: 0 0 40px;
+  }
+
+  .title {
+    font-size: clamp(38px, 11vw, 56px);
+  }
+
+  .layout {
+    padding: 40px 0 56px;
+  }
+
+  .prose h2 {
+    margin-top: 48px;
+  }
+
+  .prose > p:first-child {
+    font-size: 17px;
+  }
+
+  .authorCard {
+    flex-direction: column;
+    gap: 20px;
+    padding: 24px;
+  }
+
+  .shareBlock {
+    margin-top: 48px;
+  }
+
+  .next {
+    margin-top: 48px;
+  }
+}

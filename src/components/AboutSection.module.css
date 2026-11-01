@@ -1,0 +1,60 @@
+.nowQuote {
+  max-width: 760px;
+  padding-left: 24px;
+  border-left: 2px solid var(--accent);
+}
+
+.nowQuote > p {
+  color: #4f524b;
+  font-family: var(--serif);
+  font-size: 19px;
+  letter-spacing: -0.01em;
+  line-height: 1.8;
+}
+
+.nowMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 32px;
+  margin-top: 28px;
+  font-size: 12px;
+}
+
+.nowMeta div {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nowMeta span {
+  color: var(--muted-2);
+}
+
+.nowMeta a,
+.nowMeta strong {
+  font-weight: 600;
+}
+
+.nowMeta a {
+  transition: color 0.2s;
+}
+
+.nowMeta a:hover {
+  color: var(--accent);
+}
+
+@media (max-width: 640px) {
+  .nowQuote {
+    padding-left: 18px;
+  }
+
+  .nowQuote > p {
+    font-size: 17px;
+    line-height: 1.75;
+  }
+
+  .nowMeta {
+    flex-direction: column;
+    gap: 10px;
+  }
+}

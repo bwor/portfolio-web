@@ -46,8 +46,14 @@ function SiteShell() {
             path="/"
             element={<HomePage profile={profile} projects={projects} articles={articles} />}
           />
-          <Route path="/project/:id" element={<ProjectDetailPage projects={projects} />} />
-          <Route path="/article/:id" element={<ArticleDetailPage />} />
+          <Route
+            path="/project/:id"
+            element={<ProjectDetailPage projects={projects} articles={articles} />}
+          />
+          <Route
+            path="/article/:id"
+            element={<ArticleDetailPage profile={profile} articles={articles} />}
+          />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>

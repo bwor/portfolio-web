@@ -1,4 +1,7 @@
 import { Link } from 'react-router-dom'
+import Section from './Section'
+import SectionHead from './SectionHead'
+import styles from './AboutSection.module.css'
 import type { Profile } from '../types/profile'
 import type { Project } from '../types/project'
 
@@ -19,19 +22,15 @@ export default function AboutSection({ profile, projects }: AboutSectionProps) {
   const updated = latest ? new Date(latest.created_at) : null
 
   return (
-    <section className="section" id="now" aria-label="最近">
-      <div className="section-head">
-        <div>
-          <p className="kicker">Now</p>
-          <h2>最近</h2>
-        </div>
-        <span className="section-meta">
-          {updated ? `${updated.getFullYear()} / ${pad(updated.getMonth() + 1)} 更新` : '整理中'}
-        </span>
-      </div>
-      <div className="now-quote">
+    <Section id="now" ariaLabel="最近">
+      <SectionHead
+        kicker="Now"
+        title="最近"
+        meta={updated ? `${updated.getFullYear()} / ${pad(updated.getMonth() + 1)} 更新` : '整理中'}
+      />
+      <div className={styles.nowQuote}>
         {profile?.now_text && <p>{profile.now_text}</p>}
-        <div className="now-meta">
+        <div className={styles.nowMeta}>
           <div>
             <span>项目</span>
             {latest ? (
@@ -60,6 +59,6 @@ export default function AboutSection({ profile, projects }: AboutSectionProps) {
           </div>
         </div>
       </div>
-    </section>
+    </Section>
   )
 }

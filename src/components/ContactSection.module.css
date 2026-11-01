@@ -1,0 +1,71 @@
+/* ---------- cta ---------- */
+.cta {
+  padding: 40px;
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.ctaKicker {
+  margin-bottom: 16px;
+  color: rgba(243, 241, 235, 0.5);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.ctaInner {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 32px;
+}
+
+.cta h2 {
+  max-width: 520px;
+  font-family: var(--serif);
+  font-size: 32px;
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 1.2;
+}
+
+.cta a {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(243, 241, 235, 0.5);
+  font-size: 13px;
+  white-space: nowrap;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.cta a:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.ctaSign {
+  margin-top: 24px;
+  color: rgba(243, 241, 235, 0.55);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+}
+
+@media (max-width: 640px) {
+  .cta {
+    padding: 28px 24px;
+  }
+
+  .ctaInner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 24px;
+  }
+
+  .cta h2 {
+    font-size: 26px;
+  }
+}

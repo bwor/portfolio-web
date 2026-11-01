@@ -1,4 +1,6 @@
 import { useEffect } from 'react'
+import { cx } from '../lib/cx'
+import styles from './Lightbox.module.css'
 
 const pad = (n: number) => String(n).padStart(2, '0')
 
@@ -35,16 +37,16 @@ export default function Lightbox({ items, index, onClose, onStep }: LightboxProp
   if (!item) return null
 
   return (
-    <div className="lb" role="dialog" aria-modal="true" aria-label="图片大图">
-      <div className="scrim" onClick={onClose} />
-      <button className="ar l" onClick={() => onStep(-1)} aria-label="上一张">
+    <div className={styles.lb} role="dialog" aria-modal="true" aria-label="图片大图">
+      <div className={styles.scrim} onClick={onClose} />
+      <button className={cx(styles.ar, styles.l)} onClick={() => onStep(-1)} aria-label="上一张">
         ←
       </button>
-      <button className="ar r" onClick={() => onStep(1)} aria-label="下一张">
+      <button className={cx(styles.ar, styles.r)} onClick={() => onStep(1)} aria-label="下一张">
         →
       </button>
       <figure>
-        <button className="x" onClick={onClose} aria-label="关闭">
+        <button className={styles.x} onClick={onClose} aria-label="关闭">
           ✕
         </button>
         <img src={item.src} alt={item.caption} />

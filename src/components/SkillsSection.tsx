@@ -1,3 +1,6 @@
+import Section from './Section'
+import SectionHead from './SectionHead'
+import styles from './SkillsSection.module.css'
 import type { Profile } from '../types/profile'
 
 interface SkillsSectionProps {
@@ -12,22 +15,16 @@ export default function SkillsSection({ profile }: SkillsSectionProps) {
   if (skills.length === 0) return null
 
   return (
-    <section className="section" id="skills" aria-label="技能">
-      <div className="section-head">
-        <div>
-          <p className="kicker">Toolkit</p>
-          <h2>技能</h2>
-        </div>
-        <span className="section-meta">Skills {pad(skills.length)}</span>
-      </div>
-      <div className="skills-grid">
+    <Section id="skills" ariaLabel="技能">
+      <SectionHead kicker="Toolkit" title="技能" meta={`Skills ${pad(skills.length)}`} />
+      <div className={styles.skillsGrid}>
         {skills.map((s, i) => (
-          <div className="skill" key={s}>
-            <span className="skill-no">{pad(i + 1)}</span>
-            <span className="skill-name">{s}</span>
+          <div className={styles.skill} key={s}>
+            <span className={styles.skillNo}>{pad(i + 1)}</span>
+            <span className={styles.skillName}>{s}</span>
           </div>
         ))}
       </div>
-    </section>
+    </Section>
   )
 }

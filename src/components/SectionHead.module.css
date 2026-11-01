@@ -1,0 +1,48 @@
+.sectionHead {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.sectionHead h2 {
+  font-family: var(--serif);
+  font-size: 34px;
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1.15;
+}
+
+.sectionMeta {
+  flex-shrink: 0;
+  color: var(--muted-2);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+}
+
+.sectionLink {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.sectionLink:hover {
+  color: var(--accent);
+}
+
+.sectionLink svg {
+  width: 14px;
+  height: 14px;
+}
+
+@media (max-width: 640px) {
+  .sectionHead h2 {
+    font-size: 28px;
+  }
+}

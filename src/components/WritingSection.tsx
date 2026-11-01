@@ -1,5 +1,8 @@
 import { Link } from 'react-router-dom'
 import { Arrow } from './Arrow'
+import Section from './Section'
+import SectionHead from './SectionHead'
+import styles from './WritingSection.module.css'
 import type { Article } from '../types/article'
 
 interface WritingSectionProps {
@@ -19,33 +22,29 @@ function formatShort(ms: number): string {
  */
 export default function WritingSection({ articles }: WritingSectionProps) {
   return (
-    <section className="section" id="writing" aria-label="文章">
-      <div className="section-head">
-        <div>
-          <p className="kicker">Writing</p>
-          <h2>最近在写</h2>
-        </div>
-        <a href="#" className="section-link">
-          全部文章 <Arrow />
-        </a>
-      </div>
+    <Section id="writing" ariaLabel="文章">
+      <SectionHead
+        kicker="Writing"
+        title="最近在写"
+        link={{ label: '全部文章', href: '#' }}
+      />
       {articles.length === 0 ? (
-        <p className="writing-empty">暂时还没有发布文章。</p>
+        <p className={styles.writingEmpty}>暂时还没有发布文章。</p>
       ) : (
-        <div className="writing-list">
+        <div className={styles.writingList}>
           {articles.map((a) => (
-            <Link to={`/article/${a.id}`} className="writing-item" key={a.id}>
-              <div className="writing-meta">
-                <span className="writing-date">{formatShort(a.created_at)}</span>
-                {a.category && <span className="writing-cat">#{a.category}</span>}
+            <Link to={`/article/${a.id}`} className={styles.writingItem} key={a.id}>
+              <div className={styles.writingMeta}>
+                <span className={styles.writingDate}>{formatShort(a.created_at)}</span>
+                {a.category && <span className={styles.writingCat}>#{a.category}</span>}
               </div>
-              <div className="writing-body">
-                <h3 className="writing-title">{a.title}</h3>
-                {a.excerpt && <p className="writing-excerpt">{a.excerpt}</p>}
+              <div>
+                <h3 className={styles.writingTitle}>{a.title}</h3>
+                {a.excerpt && <p className={styles.writingExcerpt}>{a.excerpt}</p>}
               </div>
-              <div className="writing-extra">
+              <div className={styles.writingExtra}>
                 {a.read_time && <span>{a.read_time}</span>}
-                <span className="writing-arrow">
+                <span className={styles.writingArrow}>
                   <Arrow />
                 </span>
               </div>
@@ -53,6 +52,6 @@ export default function WritingSection({ articles }: WritingSectionProps) {
           ))}
         </div>
       )}
-    </section>
+    </Section>
   )
 }

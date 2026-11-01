@@ -1,0 +1,29 @@
+/* ---------- footer ---------- */
+.siteFooter {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 28px 32px;
+  border-top: 1px solid var(--line-soft);
+  color: var(--muted-2);
+  font-size: 11px;
+}
+
+.siteFooter a {
+  color: var(--ink);
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.siteFooter a:hover {
+  color: var(--accent);
+}
+
+@media (max-width: 640px) {
+  .siteFooter {
+    flex-direction: column;
+    padding: 24px 20px;
+  }
+}

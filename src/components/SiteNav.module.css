@@ -1,0 +1,86 @@
+/* ---------- header ---------- */
+.siteHeader {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  border-bottom: 1px solid var(--line-soft);
+  background: rgba(243, 241, 235, 0.9);
+  backdrop-filter: blur(16px);
+}
+
+.siteHeaderInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: var(--max);
+  height: 64px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+.brand {
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.brandDot {
+  color: var(--accent);
+}
+
+.navLinks {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.navLinks > a:not(.navCta) {
+  transition: color 0.2s;
+}
+
+.navLinks > a:not(.navCta):hover {
+  color: var(--accent);
+}
+
+.navCta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 12px;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.navCta:hover {
+  background: var(--accent);
+}
+
+.navCta svg {
+  width: 14px;
+  height: 14px;
+}
+
+@media (max-width: 640px) {
+  .siteHeaderInner {
+    padding: 0 20px;
+  }
+
+  .navLinks {
+    gap: 18px;
+  }
+
+  .navLinks > a:not(.navCta):first-child {
+    display: none;
+  }
+
+  .brand {
+    font-size: 16px;
+  }
+}

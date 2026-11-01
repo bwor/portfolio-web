@@ -1,4 +1,6 @@
 import { Arrow } from './Arrow'
+import Kicker from './Kicker'
+import styles from './HeroSection.module.css'
 import type { Profile } from '../types/profile'
 
 interface HeroSectionProps {
@@ -13,19 +15,19 @@ export default function HeroSection({ profile }: HeroSectionProps) {
   const initial = profile?.name?.trim().charAt(0) || '·'
 
   return (
-    <aside className="sidebar" id="intro" aria-label="个人简介">
-      <div className="sidebar-head">
-        <div className="avatar" aria-hidden="true">
+    <aside className={styles.sidebar} id="intro" aria-label="个人简介">
+      <div className={styles.sidebarHead}>
+        <div className={styles.avatar} aria-hidden="true">
           <span>{initial}</span>
-          <i className="avatar-dot" />
+          <i className={styles.avatarDot} />
         </div>
         <div>
-          <p className="kicker">{profile?.title ?? 'Portfolio'}</p>
-          <h1 className="sidebar-name">{profile?.name ?? 'Portfolio'}</h1>
+          <Kicker>{profile?.title ?? 'Portfolio'}</Kicker>
+          <h1 className={styles.sidebarName}>{profile?.name ?? 'Portfolio'}</h1>
         </div>
       </div>
-      <p className="sidebar-bio">{profile?.summary ?? '简介正在整理中，稍后再来看看。'}</p>
-      <dl className="sidebar-meta">
+      <p className={styles.sidebarBio}>{profile?.summary ?? '简介正在整理中，稍后再来看看。'}</p>
+      <dl className={styles.sidebarMeta}>
         <div>
           <dt>主要技术</dt>
           <dd>{primary}</dd>
@@ -36,20 +38,20 @@ export default function HeroSection({ profile }: HeroSectionProps) {
         </div>
         <div>
           <dt>当前状态</dt>
-          <dd className="status">
+          <dd className={styles.status}>
             <i />
             开放交流
           </dd>
         </div>
       </dl>
-      <div className="sidebar-social">
+      <div className={styles.sidebarSocial}>
         {profile?.github_url && (
-          <a href={profile.github_url} target="_blank" rel="noopener noreferrer" className="social-link">
+          <a href={profile.github_url} target="_blank" rel="noopener noreferrer" className={styles.socialLink}>
             GitHub <Arrow diagonal />
           </a>
         )}
         {profile?.email && (
-          <a href={`mailto:${profile.email}`} className="social-link">
+          <a href={`mailto:${profile.email}`} className={styles.socialLink}>
             Email <Arrow diagonal />
           </a>
         )}

@@ -1,4 +1,6 @@
 import { Arrow } from './Arrow'
+import { cx } from '../lib/cx'
+import styles from './ContactSection.module.css'
 import type { Profile } from '../types/profile'
 
 interface ContactSectionProps {
@@ -9,9 +11,9 @@ export default function ContactSection({ profile }: ContactSectionProps) {
   const email = profile?.email ?? null
 
   return (
-    <section className="cta reveal" id="contact" aria-label="联系">
-      <p className="cta-kicker">Let&apos;s build something</p>
-      <div className="cta-inner">
+    <section className={cx(styles.cta, 'reveal')} id="contact" aria-label="联系">
+      <p className={styles.ctaKicker}>Let&apos;s build something</p>
+      <div className={styles.ctaInner}>
         <h2>
           有一个值得实现的想法？
           <br />

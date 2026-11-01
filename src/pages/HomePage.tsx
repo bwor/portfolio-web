@@ -5,6 +5,7 @@ import AboutSection from '../components/AboutSection'
 import WritingSection from '../components/WritingSection'
 import WorksSection from '../components/WorksSection'
 import ContactSection from '../components/ContactSection'
+import styles from './HomePage.module.css'
 import type { Profile } from '../types/profile'
 import type { Project } from '../types/project'
 import type { Article } from '../types/article'
@@ -26,9 +27,9 @@ export default function HomePage({ profile, projects, articles }: HomePageProps)
   }, [location])
 
   return (
-    <div className="page" id="top">
+    <div className={styles.page} id="top">
       <HeroSection profile={profile} />
-      <div className="content">
+      <div className={styles.content}>
         <AboutSection profile={profile} projects={projects} />
         <WritingSection articles={articles} />
         <WorksSection projects={projects} />

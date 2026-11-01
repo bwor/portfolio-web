@@ -1,0 +1,99 @@
+/* ---------- writing ---------- */
+.writingList {
+  border-top: 1px solid var(--line);
+}
+
+.writingItem {
+  display: grid;
+  grid-template-columns: 70px minmax(0, 1fr) 70px;
+  gap: 24px;
+  align-items: start;
+  padding: 28px 0;
+  border-bottom: 1px solid var(--line);
+  transition: color 0.2s;
+}
+
+.writingMeta {
+  font-size: 11px;
+}
+
+.writingDate {
+  display: block;
+  color: var(--muted-2);
+}
+
+.writingCat {
+  display: block;
+  margin-top: 8px;
+  color: var(--accent);
+}
+
+.writingTitle {
+  margin-bottom: 8px;
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.25;
+  transition: color 0.2s;
+}
+
+.writingItem:hover .writingTitle {
+  color: var(--accent);
+}
+
+.writingExcerpt {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.writingExtra {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  font-size: 10px;
+  color: var(--muted-2);
+}
+
+.writingArrow {
+  color: var(--ink);
+  transition: transform 0.2s;
+}
+
+.writingItem:hover .writingArrow {
+  transform: translateX(4px);
+}
+
+.writingArrow svg {
+  width: 14px;
+  height: 14px;
+}
+
+.writingEmpty {
+  padding: 28px 0;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 13px;
+}
+
+@media (max-width: 720px) {
+  .writingItem {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .writingMeta {
+    display: flex;
+    gap: 12px;
+  }
+
+  .writingCat {
+    margin-top: 0;
+  }
+
+  .writingExtra {
+    justify-content: flex-start;
+  }
+}
